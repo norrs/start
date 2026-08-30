@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>Start — Product &amp; Technical Specification</title>
+  <style>
+    :root {
+      --bg: #08111f;
+      --panel: #0f1b2d;
+      --panel-2: #14243a;
+      --text: #e8eef8;
+      --muted: #9fb0c7;
+      --line: #2a3a51;
+      --accent: #5eead4;
+      --accent-2: #60a5fa;
+      --warn: #fbbf24;
+      --danger: #fb7185;
+      --ok: #86efac;
+      --code: #07101d;
+      --shadow: 0 18px 60px rgba(0, 0, 0, .26);
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font: 15px/1.65 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% -10%, rgba(96, 165, 250, .16), transparent 32rem),
+        radial-gradient(circle at 90% 10%, rgba(94, 234, 212, .1), transparent 28rem),
+        var(--bg);
+    }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    a:hover { color: #99f6e4; }
+    .layout { max-width: 1380px; margin: 0 auto; padding: 28px; }
+    .hero {
+      padding: 38px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: linear-gradient(145deg, rgba(20, 36, 58, .94), rgba(9, 19, 34, .94));
+      box-shadow: var(--shadow);
+    }
+    .eyebrow { color: var(--accent); font-weight: 750; letter-spacing: .12em; text-transform: uppercase; font-size: .76rem; }
+    h1 { margin: .3rem 0 .6rem; font-size: clamp(2rem, 5vw, 4rem); line-height: 1.02; letter-spacing: -.045em; }
+    h2 { margin: 0 0 1rem; font-size: 1.6rem; letter-spacing: -.025em; }
+    h3 { margin: 1.5rem 0 .45rem; font-size: 1.08rem; color: #c9ddf5; }
+    p { margin: .45rem 0 1rem; }
+    .lede { max-width: 860px; color: #c5d3e5; font-size: 1.08rem; }
+    .meta, .chips { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 20px; }
+    .chip, .status {
+      display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px;
+      border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: rgba(8, 17, 31, .55);
+      font-size: .83rem;
+    }
+    .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--warn); }
+    .shell { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 24px; margin-top: 24px; align-items: start; }
+    nav {
+      position: sticky; top: 18px; max-height: calc(100vh - 36px); overflow: auto;
+      padding: 18px; border: 1px solid var(--line); border-radius: var(--radius); background: rgba(15, 27, 45, .9);
+    }
+    nav strong { display: block; margin: 0 0 8px; font-size: .8rem; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
+    nav a { display: block; padding: 6px 8px; border-radius: 7px; color: #c5d3e5; text-decoration: none; }
+    nav a:hover { background: var(--panel-2); color: var(--text); }
+    main { min-width: 0; }
+    section {
+      margin: 0 0 20px; padding: 28px; border: 1px solid var(--line);
+      border-radius: var(--radius); background: rgba(15, 27, 45, .9); box-shadow: 0 8px 30px rgba(0,0,0,.12);
+    }
+    .grid-2, .grid-3 { display: grid; gap: 14px; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card { padding: 16px; border: 1px solid var(--line); background: var(--panel-2); border-radius: 11px; }
+    .card h3 { margin-top: 0; }
+    .callout { border-left: 4px solid var(--accent-2); padding: 12px 15px; background: rgba(96, 165, 250, .09); border-radius: 0 9px 9px 0; }
+    .callout.warning { border-left-color: var(--warn); background: rgba(251, 191, 36, .08); }
+    .callout.danger { border-left-color: var(--danger); background: rgba(251, 113, 133, .08); }
+    ul, ol { padding-left: 1.35rem; }
+    li + li { margin-top: .35rem; }
+    code, pre, kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    code { color: #b8f3ea; background: var(--code); border: 1px solid #23334a; border-radius: 5px; padding: .1em .35em; font-size: .9em; }
+    kbd { display: inline-block; min-width: 1.7em; padding: .05em .4em; text-align: center; color: #dce7f6; background: var(--code); border: 1px solid #3a4b64; border-bottom-width: 3px; border-radius: 5px; font-size: .86em; }
+    pre { margin: 12px 0; overflow: auto; padding: 16px; color: #dce7f6; background: var(--code); border: 1px solid #23334a; border-radius: 10px; line-height: 1.5; }
+    pre code { border: 0; padding: 0; background: transparent; color: inherit; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: .93rem; }
+    th, td { padding: 10px 12px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #182a43; color: #d8e7f8; }
+    td { background: rgba(8, 17, 31, .28); }
+    .req { white-space: nowrap; color: var(--accent); font-family: ui-monospace, monospace; font-size: .84rem; }
+    .priority { display: inline-block; min-width: 2.1rem; text-align: center; padding: 1px 7px; border-radius: 999px; font-weight: 750; font-size: .75rem; }
+    .must { color: #052e20; background: var(--ok); }
+    .should { color: #422006; background: var(--warn); }
+    .later { color: #172554; background: #93c5fd; }
+    .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; padding: 14px 0 4px; }
+    .flow span { padding: 9px 12px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 9px; }
+    .flow b { color: var(--accent-2); }
+    .small { color: var(--muted); font-size: .88rem; }
+    .checklist li::marker { color: var(--ok); }
+    footer { padding: 20px 8px 50px; color: var(--muted); text-align: center; }
+    @media (max-width: 900px) {
+      .layout { padding: 14px; }
+      .hero { padding: 25px; }
+      .shell { grid-template-columns: 1fr; }
+      nav { position: static; max-height: none; columns: 2; }
+      nav strong { column-span: all; }
+      section { padding: 21px; }
+      .grid-3 { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 620px) {
+      nav { columns: 1; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      table { display: block; overflow-x: auto; }
+      .hero, section { padding: 18px; }
+    }
+    @media print {
+      :root { --bg: white; --panel: white; --panel-2: #f4f6f8; --text: #111827; --muted: #4b5563; --line: #cbd5e1; --code: #f1f5f9; }
+      body { background: white; }
+      .layout { max-width: none; padding: 0; }
+      .hero, section { box-shadow: none; break-inside: avoid; }
+      nav { display: none; }
+      .shell { display: block; }
+      a { color: #075985; }
+      code { color: #164e63; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <header class="hero">
+      <div class="eyebrow">Product &amp; technical specification</div>
+      <h1>Start</h1>
+      <p class="lede">A self-hosted, identity-aware dashboard for discovering internal tools and resources. The product gives users a fast, personalized directory while allowing delegated administrators to safely maintain links for the groups and categories they own.</p>
+      <div class="meta">
+        <span class="status">Draft for implementation</span>
+        <span class="chip">Version 0.1</span>
+        <span class="chip">29 August 2026</span>
+        <span class="chip">Go + Gin</span>
+        <span class="chip">Vue 3</span>
+        <span class="chip">SQLite + sqlc</span>
+        <span class="chip">Bazel</span>
+      </div>
+    </header>
+
+    <div class="shell">
+      <nav aria-label="Specification sections">
+        <strong>Contents</strong>
+        <a href="#summary">1. Summary</a>
+        <a href="#scope">2. Scope</a>
+        <a href="#concepts">3. Concepts &amp; roles</a>
+        <a href="#requirements">4. Requirements</a>
+        <a href="#ux">5. UX specification</a>
+        <a href="#authorization">6. Auth &amp; authorization</a>
+        <a href="#architecture">7. Architecture</a>
+        <a href="#data">8. Data model</a>
+        <a href="#api">9. HTTP API</a>
+        <a href="#seed">10. YAML seeding</a>
+        <a href="#configuration">11. Configuration</a>
+        <a href="#operations">12. Operations</a>
+        <a href="#security">13. Security</a>
+        <a href="#quality">14. Quality attributes</a>
+        <a href="#testing">15. Testing</a>
+        <a href="#delivery">16. Delivery plan</a>
+        <a href="#acceptance">17. Acceptance criteria</a>
+        <a href="#decisions">18. Decisions &amp; open items</a>
+      </nav>
+
+      <main>
+        <section id="summary">
+          <h2>1. Summary</h2>
+          <p><strong>Start</strong> is a responsive web application that an organization can run on its own network. It stores and presents links to existing services such as Stirling PDF; it does not install, bootstrap, monitor, proxy, or manage those services.</p>
+          <div class="grid-3">
+            <article class="card"><h3>Find quickly</h3><p>Browse categories, switch to a flat view, or fuzzy-search titles, descriptions, URLs, and tags.</p></article>
+            <article class="card"><h3>See what matters</h3><p>Filter by identity roles and teams, then let each user hide links that are irrelevant to them.</p></article>
+            <article class="card"><h3>Delegate safely</h3><p>System, group, and category administrators manage only their authorized scope, with protected deletion.</p></article>
+          </div>
+          <h3>Success measures</h3>
+          <ul>
+            <li>A signed-in user can reach a known tool from the home screen in under 10 seconds.</li>
+            <li>Search feedback appears within 100 ms for a typical directory of up to 5,000 links.</li>
+            <li>Routine link maintenance does not require filesystem, YAML, or database access.</li>
+            <li>Unauthorized links and management actions are never disclosed by API responses.</li>
+            <li>A new instance can start from a single container and persistent SQLite volume.</li>
+          </ul>
+        </section>
+
+        <section id="scope">
+          <h2>2. Scope</h2>
+          <div class="grid-2">
+            <div>
+              <h3>In scope for v1</h3>
+              <ul>
+                <li>OIDC sign-in through Tinyauth, with Pocket ID as the supported upstream identity provider.</li>
+                <li>Identity claim mapping for stable user ID, email, display name, roles, teams, and groups.</li>
+                <li>Link, category, group, tag, visibility-rule, and delegated-administrator management.</li>
+                <li>Categorized and flat browsing, fuzzy search, keyboard navigation, and personal hiding.</li>
+                <li>Dark, light, Hacker, and 1984 themes; custom name, logo, colors, and welcome text.</li>
+                <li>SQLite persistence, one-time YAML seed, Goose SQL migrations, and sqlc-generated data access.</li>
+                <li>Health/readiness endpoints, Prometheus metrics, structured logging, and branded error pages.</li>
+                <li>Container image, example Compose deployment, and documented backup/restore.</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Explicitly out of scope for v1</h3>
+              <ul>
+                <li>Installing or controlling linked services, including Stirling PDF.</li>
+                <li>Checking availability of every link or promising that a link is safe.</li>
+                <li>A secrets vault, password manager, reverse proxy, or identity provider.</li>
+                <li>Public anonymous access, native mobile apps, browser extensions, or internet-wide crawling.</li>
+                <li>Full boolean policy language, link approval workflows, link analytics, favorites, or manual ordering.</li>
+                <li>The VPN/network heuristic beyond reserving a header component and API contract.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="callout"><strong>Deployment assumption:</strong> Start runs as a container behind an HTTPS reverse proxy at an operator-selected hostname. The application remains responsible for its own OIDC session and authorization checks.</div>
+        </section>
+
+        <section id="concepts">
+          <h2>3. Core concepts and roles</h2>
+          <table>
+            <thead><tr><th>Concept</th><th>Meaning</th><th>Important distinction</th></tr></thead>
+            <tbody>
+              <tr><td>Link</td><td>A title and URL plus optional description, icon, category, tags, owner group, and audience rules.</td><td>A link is metadata only; it does not grant access to its destination.</td></tr>
+              <tr><td>Category</td><td>A customizable browsing section such as Development, Monitoring, Security, or Media.</td><td>Categories organize links; they are not identity groups.</td></tr>
+              <tr><td>Owner group</td><td>The organizational unit responsible for maintaining a link.</td><td>Ownership controls who may edit; it does not determine who may see the link.</td></tr>
+              <tr><td>Role / team</td><td>Audience attributes received from identity claims and normalized locally.</td><td>Audience attributes affect visibility, not destination authorization.</td></tr>
+              <tr><td>Personal hidden link</td><td>A user preference that suppresses a visible link from normal browsing.</td><td>It can be revealed from settings and never deletes the shared link.</td></tr>
+            </tbody>
+          </table>
+
+          <h3>Application roles</h3>
+          <table>
+            <thead><tr><th>Role</th><th>Capabilities</th></tr></thead>
+            <tbody>
+              <tr><td><strong>User</strong></td><td>View authorized links; search; change preferences; hide and restore links.</td></tr>
+              <tr><td><strong>Group admin</strong></td><td>Create links owned by a managed group and edit/delete links in those groups.</td></tr>
+              <tr><td><strong>Category admin</strong></td><td>Edit/delete links in managed categories. Creating a link still requires selecting an owner group the user may administer, unless a system admin performs the action.</td></tr>
+              <tr><td><strong>System admin</strong></td><td>Manage all links, categories, groups, admin assignments, branding, and global settings.</td></tr>
+            </tbody>
+          </table>
+          <p class="small">A person may hold multiple roles. Effective permission is the union of authorized scopes. Role checks are performed server-side for every mutation.</p>
+        </section>
+
+        <section id="requirements">
+          <h2>4. Functional requirements</h2>
+          <p><span class="priority must">MUST</span> is required for v1, <span class="priority should">SHOULD</span> is expected if schedule allows, and <span class="priority later">LATER</span> is intentionally deferred.</p>
+          <table>
+            <thead><tr><th>ID</th><th>Priority</th><th>Requirement</th></tr></thead>
+            <tbody>
+              <tr><td class="req">FR-001</td><td><span class="priority must">MUST</span></td><td>Require an authenticated OIDC session for all UI and application API routes except health, readiness, metrics (when separately protected), static assets, and OIDC callback routes.</td></tr>
+              <tr><td class="req">FR-002</td><td><span class="priority must">MUST</span></td><td>List only links whose audience rule matches the current identity, excluding personally hidden links by default.</td></tr>
+              <tr><td class="req">FR-003</td><td><span class="priority must">MUST</span></td><td>Offer categorized and flat views without a full page reload; remember the user’s choice.</td></tr>
+              <tr><td class="req">FR-004</td><td><span class="priority must">MUST</span></td><td>Fuzzy-search normalized title, description, URL hostname/path, and tags, with title and tag matches ranked highest.</td></tr>
+              <tr><td class="req">FR-005</td><td><span class="priority must">MUST</span></td><td>When a non-empty query yields exactly one visible result, Enter opens it. When zero or multiple results remain, Enter does not navigate unexpectedly.</td></tr>
+              <tr><td class="req">FR-006</td><td><span class="priority must">MUST</span></td><td>Support keyboard focus with Up/Down selection and Enter to open the explicitly selected result.</td></tr>
+              <tr><td class="req">FR-007</td><td><span class="priority must">MUST</span></td><td>Allow a user to hide a link, show hidden links on request, and restore any hidden link.</td></tr>
+              <tr><td class="req">FR-008</td><td><span class="priority must">MUST</span></td><td>Create and edit links with title, URL, description, icon, category, owner group, tags, roles, and teams.</td></tr>
+              <tr><td class="req">FR-009</td><td><span class="priority must">MUST</span></td><td>Validate URI syntax and length, accept HTTP, HTTPS, and other well-formed destination schemes, normalize tags, prevent duplicate exact URLs unless explicitly confirmed by a system admin, and show field-level errors. Browser-executable schemes such as <code>javascript:</code>, <code>data:</code>, and <code>vbscript:</code> remain blocked.</td></tr>
+              <tr><td class="req">FR-010</td><td><span class="priority must">MUST</span></td><td>Allow group admins, category admins, and system admins to edit or delete links within their effective scope.</td></tr>
+              <tr><td class="req">FR-011</td><td><span class="priority must">MUST</span></td><td>Require a confirmation dialog for deletion that names the link; send the final delete only after confirmation.</td></tr>
+              <tr><td class="req">FR-012</td><td><span class="priority must">MUST</span></td><td>Allow system admins to CRUD categories and owner groups, assign delegated admins, and block deletion while dependent links exist unless links are reassigned.</td></tr>
+              <tr><td class="req">FR-013</td><td><span class="priority must">MUST</span></td><td>Provide Dark, Light, Hacker, and 1984 themes with accessible contrast and no content change between themes.</td></tr>
+              <tr><td class="req">FR-014</td><td><span class="priority must">MUST</span></td><td>Provide preferences for descriptions, category headings, icons, colored icons, theme, view mode, and whether hidden items appear.</td></tr>
+              <tr><td class="req">FR-015</td><td><span class="priority must">MUST</span></td><td>Persist preferences immediately in local storage for instant startup and in SQLite for cross-browser continuity. Server values win on first authenticated load; new local edits then sync to the server.</td></tr>
+              <tr><td class="req">FR-016</td><td><span class="priority must">MUST</span></td><td>Resolve icons from Devicon, Font Awesome Free, or Material Symbols, with administrator-selected icon name/provider, a live preview while editing the provider/name/color, and deterministic fallbacks.</td></tr>
+              <tr><td class="req">FR-017</td><td><span class="priority must">MUST</span></td><td>Display the custom organization name, logo, and accent color in the header together with <code>Welcome &lt;OIDC name&gt;</code> in the account menu trigger.</td></tr>
+              <tr><td class="req">FR-018</td><td><span class="priority must">MUST</span></td><td>Seed from <code>links.yaml</code> exactly once when no application data exists; never overwrite later database edits on restart.</td></tr>
+              <tr><td class="req">FR-019</td><td><span class="priority must">MUST</span></td><td>Return branded HTML for browser-facing 401, 403, 404, 429, and 5xx responses and structured JSON errors for <code>/api/*</code>.</td></tr>
+              <tr><td class="req">FR-020</td><td><span class="priority should">SHOULD</span></td><td>Offer an admin preview that evaluates a link’s visibility for selected roles and teams without impersonating a real user.</td></tr>
+              <tr><td class="req">FR-021</td><td><span class="priority later">LATER</span></td><td>Show a header VPN/network indicator derived from a documented, configurable server-side heuristic and label uncertain status honestly.</td></tr>
+              <tr><td class="req">FR-022</td><td><span class="priority must">MUST</span></td><td>Make the default UX fully operable without a pointer. Provide discoverable hotkey-based navigation for search, link selection, opening links, changing views, common link actions, dialogs, and forms; show a shortcut reference and allow users to disable single-character shortcuts.</td></tr>
+              <tr><td class="req">FR-023</td><td><span class="priority must">MUST</span></td><td>Record an immutable full snapshot for every link create, update, delete, and restore. A permission-scoped admin history UI lists changes across all manageable links with actor and timestamp details. Administrators can select one snapshot for each of any subset of links and restore that subset atomically; unselected links remain unchanged and each restoration creates a new revision rather than rewriting history.</td></tr>
+              <tr><td class="req">FR-024</td><td><span class="priority must">MUST</span></td><td>Use Bazel as the canonical entry point for backend and frontend builds, code-generation verification, tests, linting, production assets, and container images. CI must use the same Bazel targets documented for local development.</td></tr>
+              <tr><td class="req">FR-025</td><td><span class="priority must">MUST</span></td><td>Allow system administrators to select, preview, confirm, and atomically merge a validated <code>links.yaml</code>-format file from the web interface. Matching slugs update or restore records, omitted records remain unchanged, repeated unchanged imports are no-ops, and link changes are attributed to the importing administrator in immutable history.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="ux">
+          <h2>5. UX specification</h2>
+          <h3>Primary page structure</h3>
+          <ol>
+            <li><strong>Header:</strong> branding, reserved network-status area, administration/settings actions, and a user menu labeled <code>Welcome &lt;OIDC name&gt;</code>.</li>
+            <li><strong>Toolbar:</strong> the search field is the first main-page control, followed by the categorized/flat toggle and add-link action when authorized. Do not repeat welcome copy, branding text, or destination counts above it.</li>
+            <li><strong>Content:</strong> responsive link-card grid grouped by category, or one flat ranked result grid.</li>
+            <li><strong>Footer:</strong> version/build information and optional operator-defined support link.</li>
+          </ol>
+          <h3>Link card</h3>
+          <ul>
+            <li>Icon, title, hostname, optional description, and tags. Cards use a real anchor so open-in-new-tab, copy-link, and accessibility semantics work normally.</li>
+            <li>Actions appear in a keyboard-reachable overflow menu: open, copy URL, hide/show, edit, and delete when permitted.</li>
+            <li>Links open in the same tab by default. A per-user setting may change this to a new tab; new-tab links include <code>rel="noopener noreferrer"</code>.</li>
+            <li>Hidden links appear with reduced emphasis only while “Show hidden” is enabled.</li>
+          </ul>
+          <h3>Search behavior</h3>
+          <ul>
+            <li>Search is client-side over the already authorized payload, debounced no more than 75 ms. Matching is case-insensitive, diacritic-insensitive, and tolerant of minor typos.</li>
+            <li>Ranking weights: title 5, tags 4, hostname 3, description 2, URL path 1; prefix matches receive a bonus.</li>
+            <li>The URL bar may encode <code>?q=</code> and <code>?view=</code> so a view can be bookmarked without storing identity data in the URL.</li>
+            <li>If the query is non-empty and exactly one result remains, show “Press Enter to open.” Never trigger this shortcut while a dialog, menu, or form control owns keyboard focus.</li>
+          </ul>
+          <h3>Keyboard-first navigation and hotkeys</h3>
+          <p>Every primary workflow must work with the keyboard alone, and the hotkey layer is enabled by default. Pressing <kbd>?</kbd> opens a searchable shortcut reference that lists only actions available to the current user. Interactive elements retain normal Tab behavior, a visible focus indicator, logical focus order, and native activation semantics.</p>
+          <table>
+            <thead><tr><th>Key</th><th>Default action</th></tr></thead>
+            <tbody>
+              <tr><td><kbd>/</kbd> or <kbd>Ctrl/⌘ K</kbd></td><td>Focus search and select the existing query.</td></tr>
+              <tr><td><kbd>J</kbd> / <kbd>K</kbd> or <kbd>↓</kbd> / <kbd>↑</kbd></td><td>Move focus to the next or previous visible link card or search result.</td></tr>
+              <tr><td><kbd>Enter</kbd></td><td>Open the focused link, or open the sole search result under the rules in FR-005.</td></tr>
+              <tr><td><kbd>V</kbd></td><td>Toggle between categorized and flat views.</td></tr>
+              <tr><td><kbd>H</kbd></td><td>Hide or restore the focused link after announcing the change.</td></tr>
+              <tr><td><kbd>E</kbd></td><td>Edit the focused link when the user has permission.</td></tr>
+              <tr><td><kbd>N</kbd></td><td>Open the new-link dialog when the user has permission.</td></tr>
+              <tr><td><kbd>G</kbd></td><td>Open the global link change history when the user has administrative permission.</td></tr>
+              <tr><td><kbd>Esc</kbd></td><td>Close the topmost menu/dialog, clear search when appropriate, or return focus to the invoking control.</td></tr>
+              <tr><td><kbd>?</kbd></td><td>Open or close the shortcut reference.</td></tr>
+            </tbody>
+          </table>
+          <ul>
+            <li>Single-character shortcuts never fire while focus is in an input, textarea, select, content-editable control, menu, or modal dialog unless that component explicitly owns the key.</li>
+            <li>No hotkey performs deletion or another irreversible operation directly. Existing confirmation requirements remain in force.</li>
+            <li>Available shortcuts use <code>aria-keyshortcuts</code> where applicable and are announced in accessible labels/tooltips.</li>
+            <li>Users can disable single-character shortcuts in preferences; standard Tab, Enter, Space, Escape, and arrow-key behavior remains available.</li>
+            <li>Hotkeys must account for common keyboard layouts and operating-system shortcuts. Platform-reserved combinations are not intercepted.</li>
+          </ul>
+          <h3>Reusable Vue components</h3>
+          <div class="chips">
+            <span class="chip">AppHeader</span><span class="chip">SearchBox</span><span class="chip">ViewToggle</span>
+            <span class="chip">CategorySection</span><span class="chip">LinkCard</span><span class="chip">IconRenderer</span>
+            <span class="chip">LinkForm</span><span class="chip">ConfirmDialog</span><span class="chip">BaseDialog</span>
+            <span class="chip">BaseToggle</span><span class="chip">TagInput</span><span class="chip">AudienceRuleBuilder</span>
+            <span class="chip">AdminHistoryDialog</span><span class="chip">ToastRegion</span><span class="chip">EmptyState</span><span class="chip">ErrorState</span>
+          </div>
+          <h3>Forms and dialogs</h3>
+          <p>Dialogs trap focus, close on Escape unless a save is in progress, restore focus to their trigger, and expose a visible title. Unsaved forms warn before closing. Create/edit uses the same form component, previews the resolved icon as its fields change, and sends revision metadata for optimistic concurrency. Delete is a separate destructive confirmation; it is not a secondary button on the edit form. The global admin history dialog supports filtering and selecting at most one snapshot per link for a selective atomic restore.</p>
+          <h3>Responsive behavior</h3>
+          <p>Cards use a single column below 560 px, two columns when space permits, and an auto-fitted grid on larger displays. The header collapses into a compact toolbar without hiding search. All actions remain available by keyboard and touch at a minimum 44 × 44 px target size.</p>
+        </section>
+
+        <section id="authorization">
+          <h2>6. Authentication and authorization</h2>
+          <h3>Recommended identity flow</h3>
+          <div class="flow" aria-label="OIDC authentication flow">
+            <span>Browser</span><b>→</b><span>Start</span><b>→</b><span>Tinyauth OIDC</span><b>→</b><span>Pocket ID</span><b>→</b><span>Passkey / identity</span>
+          </div>
+          <p>The Go application is an OIDC confidential client using Authorization Code flow. It discovers Tinyauth from its issuer metadata, requests <code>openid profile email groups</code>, validates issuer, audience, signature, expiry, nonce, and state, then creates an opaque application session. Tinyauth may use Pocket ID upstream. This keeps the application standards-based and avoids trusting identity headers from arbitrary clients.</p>
+          <div class="callout warning"><strong>Identity key:</strong> store users by <code>(issuer, subject)</code>. Email can change and is not a safe primary key. Keep normalized email as a display/contact attribute and optional lookup key.</div>
+          <h3>Claim mapping</h3>
+          <table>
+            <thead><tr><th>Local attribute</th><th>Default claim</th><th>Behavior</th></tr></thead>
+            <tbody>
+              <tr><td>Issuer</td><td>Configured Tinyauth issuer / token <code>iss</code></td><td>Required and matched exactly to the discovered issuer.</td></tr>
+              <tr><td>Subject</td><td><code>sub</code></td><td>Required, combined with issuer; never user-editable.</td></tr>
+              <tr><td>Email</td><td><code>email</code></td><td>Required by the target Tinyauth configuration; normalized for display and admin search.</td></tr>
+              <tr><td>Display name</td><td><code>name</code>, fallback <code>preferred_username</code>, then email</td><td>Refreshed from profile claims.</td></tr>
+              <tr><td>Identity groups</td><td><code>groups</code></td><td>String array supplied by Pocket ID through Tinyauth; refreshed and used as the sole IdP input to authorization mappings.</td></tr>
+              <tr><td>Roles</td><td>Database mapping from <code>groups</code></td><td>An explicit mapping associates an exact IdP group value with a Start role slug. Unmapped groups grant nothing.</td></tr>
+              <tr><td>Teams</td><td>Database mapping from <code>groups</code></td><td>An explicit mapping associates an exact IdP group value with a Start team slug. Unmapped groups grant nothing.</td></tr>
+              <tr><td>Administrative grants</td><td>Local user grant or mapping from <code>groups</code></td><td>May grant system, owner-group, or category administration. Email domains never grant authority.</td></tr>
+            </tbody>
+          </table>
+          <p>A supported deployment configures Pocket ID as Tinyauth’s upstream provider with <code>openid email profile groups</code> and configures Tinyauth as an OIDC issuer. Start therefore consumes the standard claims above; it does not depend on separate <code>roles</code> or <code>teams</code> claims.</p>
+          <h3>Visibility rule</h3>
+          <p>A link is included when it is enabled and each populated audience dimension matches:</p>
+          <pre><code>visible = link.enabled
+  AND (link.roles is empty OR user.roles intersects link.roles)
+  AND (link.teams is empty OR user.teams intersects link.teams)
+  AND (show_hidden OR link.id not in user.hidden_links)</code></pre>
+          <p>This gives OR behavior within a dimension and AND behavior between roles and teams. An empty role and team set means “all authenticated users.” The rule is evaluated in SQL or server code before serialization; the Vue app never receives unauthorized links.</p>
+          <h3>Mutation authorization</h3>
+          <pre><code>can_manage(link, user) = user.is_system_admin
+  OR link.owner_group_id in user.admin_group_ids
+  OR link.category_id in user.admin_category_ids</code></pre>
+          <ul>
+            <li>Creating a link requires system-admin status or administration of the selected owner group. Category administration alone cannot create a link.</li>
+            <li>Changing owner group requires administration of both the old and new groups, or system-admin status.</li>
+            <li>Changing category requires authorization for the resulting link under the same rule; category admins cannot use reassignment to escape their scope.</li>
+            <li>Every create, update, delete, category/group change, and admin assignment is audit logged.</li>
+          </ul>
+          <h3>Administrative grant sources and precedence</h3>
+          <ul>
+            <li><strong>Local grants:</strong> a system admin can grant a known OIDC identity a system, owner-group, or category administration capability in SQLite.</li>
+            <li><strong>IdP grants:</strong> a system admin can map an exact value from the OIDC <code>groups</code> claim to the same capabilities and scopes.</li>
+            <li><strong>Effective authority:</strong> the union of active local grants and mappings matched by the user’s current IdP groups. v1 has no deny rules.</li>
+            <li><strong>Membership changes:</strong> IdP-derived grants are not copied into permanent user grants. They disappear when the group is absent at the next claim refresh. The default maximum claim age is 15 minutes; an administrative mutation requires claims no older than 5 minutes and triggers refresh or reauthentication when stale.</li>
+            <li>Every authorization decision is made by Start’s server-side policy layer using the effective grants. Tinyauth authenticates the person and supplies groups; it does not decide Start’s record-level permissions.</li>
+          </ul>
+          <h3>Session policy</h3>
+          <ul>
+            <li>Opaque, random session ID in a <code>Secure</code>, <code>HttpOnly</code>, <code>SameSite=Lax</code> cookie; rotate after login.</li>
+            <li>Idle lifetime default 8 hours; absolute lifetime default 24 hours; both configurable.</li>
+            <li>Server-side session revocation on logout. Logout then navigates through Tinyauth’s trusted logout route, which performs Pocket ID RP-initiated logout using Tinyauth’s Pocket ID ID-token hint before returning to Start. Redirect targets must be relative or on an explicit allowlist.</li>
+            <li>CSRF protection for all state-changing requests using same-origin checks plus a CSRF token.</li>
+          </ul>
+          <p class="small">Reference: <a href="https://tinyauth.app/docs/guides/pocket-id/">Tinyauth’s Pocket ID guide</a> and <a href="https://tinyauth.app/docs/guides/oidc/">Tinyauth OIDC server guide</a>.</p>
+        </section>
+
+        <section id="architecture">
+          <h2>7. System architecture</h2>
+          <div class="grid-2">
+            <article class="card">
+              <h3>Backend</h3>
+              <ul>
+                <li>Go current stable release, Gin HTTP framework.</li>
+                <li>Layered modular monolith: HTTP handlers → services/policy → sqlc repositories.</li>
+                <li>OIDC client and server-side sessions.</li>
+                <li>SQLite driver with context cancellation and bound parameters.</li>
+                <li>Embedded Vue production assets using <code>go:embed</code>.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h3>Frontend</h3>
+              <ul>
+                <li>Vue 3 Composition API + TypeScript + Vite.</li>
+                <li>Pinia for session/preferences/admin state; Vue Router for routes.</li>
+                <li>Local fuzzy-search index built only from authorized links.</li>
+                <li>CSS custom properties for themes and branding.</li>
+                <li>Bundled icon subsets; no runtime CDN requirement.</li>
+              </ul>
+            </article>
+          </div>
+          <h3>Selected implementation libraries</h3>
+          <table>
+            <thead><tr><th>Concern</th><th>Selection</th><th>Reason</th></tr></thead>
+            <tbody>
+              <tr><td>Build orchestration</td><td>Bazel with Bzlmod, pinned through Bazelisk</td><td>One reproducible graph for Go, Vue, generated-code checks, tests, assets, and OCI images.</td></tr>
+              <tr><td>HTTP</td><td><code>github.com/gin-gonic/gin</code></td><td>Required framework; use standard <code>net/http</code>-compatible middleware boundaries.</td></tr>
+              <tr><td>OIDC / OAuth 2</td><td><code>github.com/coreos/go-oidc/v3</code> + <code>golang.org/x/oauth2</code></td><td>Mature discovery and ID-token verification with the standard OAuth authorization-code client.</td></tr>
+              <tr><td>Sessions</td><td><code>github.com/alexedwards/scs/v2</code> with a small sqlc-backed <code>CtxStore</code></td><td>Provides token rotation, idle/absolute expiry, and secure server-side session behavior while reusing Start’s SQLite connection.</td></tr>
+              <tr><td>SQLite driver</td><td><code>modernc.org/sqlite</code></td><td>Pure Go builds simplify reproducible amd64/arm64 containers and avoid a CGO toolchain.</td></tr>
+              <tr><td>SQL generation</td><td><code>github.com/sqlc-dev/sqlc</code></td><td>Required type-safe query generation from reviewed SQL and <code>sqlc.yml</code>.</td></tr>
+              <tr><td>Migrations</td><td><code>github.com/pressly/goose/v3</code></td><td>Supports embedded, transactional SQL migrations and SQLite.</td></tr>
+              <tr><td>Logging</td><td>Go standard library <code>log/slog</code> with <code>JSONHandler</code></td><td>Structured, dependency-free JSON logs with request-scoped attributes.</td></tr>
+              <tr><td>Metrics</td><td><code>github.com/prometheus/client_golang/prometheus</code> + <code>promhttp</code></td><td>Official Prometheus instrumentation and exposition library for Go.</td></tr>
+              <tr><td>Fuzzy search</td><td><code>fuse.js</code> in the Vue client</td><td>Weighted, typo-tolerant search across the already authorized in-browser catalog; no extra Go search service is needed.</td></tr>
+            </tbody>
+          </table>
+          <p class="small">Use current compatible stable releases when the repository is initialized and pin them in <code>go.mod</code> and the frontend lockfile. Dependabot/Renovate-style updates must pass the release gates before merging.</p>
+          <h3>Bazel build and developer workflow</h3>
+          <ul>
+            <li>Use <code>MODULE.bazel</code> (Bzlmod), <code>MODULE.bazel.lock</code>, a pinned <code>.bazelversion</code>, and checked-in <code>BUILD.bazel</code> files. Do not introduce a legacy <code>WORKSPACE</code> dependency graph.</li>
+            <li>Use <code>rules_go</code> for Go build/test/cross-compilation and Gazelle to maintain Go targets from <code>go.mod</code>. <code>go.mod</code> remains the Go dependency source of truth.</li>
+            <li>Use <code>aspect_rules_js</code> with a frozen <code>pnpm-lock.yaml</code> to run the Vue/Vite build, TypeScript checks, linting, component tests, and development server through Bazel targets.</li>
+            <li>Provide <code>bazel run //:dev</code> as the single-command local launch path. It builds the backend and production frontend assets, enables the explicit development identity, seeds an empty SQLite database, and serves on loopback by default.</li>
+            <li>Use <code>rules_oci</code> to assemble the non-root production image from the Go binary, embedded frontend assets, certificates, and migration metadata, and to produce linux/amd64 and linux/arm64 images.</li>
+            <li>Run sqlc through <code>bazel run //tools:sqlc_generate</code>. Generated Go files are checked in; <code>bazel test //tools:sqlc_generated_check</code> regenerates in a sandbox and fails on a diff.</li>
+            <li>Embed Goose SQL migrations in the Go binary. <code>bazel test //db/migrations:verify</code> applies them to a temporary SQLite database, validates forward migration, and exercises supported down migrations.</li>
+            <li>Build metadata such as version, commit, and build time is injected through declared Bazel stamping only for release builds; ordinary builds remain cacheable and reproducible.</li>
+          </ul>
+          <pre><code>bazel build //cmd/start                 # application binary
+bazel build //web:dist                  # production Vue assets
+bazel run //:dev                        # build and launch on 127.0.0.1:8080
+bazel test //...                        # all backend/frontend tests and checks
+bazel run //tools:sqlc_generate         # intentionally update generated queries
+bazel test //tools:sqlc_generated_check # verify generated files are current
+bazel build //deploy:image              # local OCI image
+bazel build //deploy:image_index        # amd64 + arm64 release index</code></pre>
+          <h3>Runtime topology</h3>
+          <div class="flow" aria-label="Runtime topology">
+            <span>Reverse proxy / HTTPS</span><b>→</b><span>Go + Gin API and embedded Vue SPA</span><b>→</b><span>SQLite volume</span>
+          </div>
+          <p>A single application process is the default. SQLite runs in WAL mode with foreign keys enabled and a bounded busy timeout. A read-only filesystem is supported except for the database, temporary runtime directory, and optional uploaded branding directory. Horizontal multi-writer scaling is not supported in v1; operators needing it should move to a future database backend.</p>
+          <h3>Suggested repository layout</h3>
+          <pre><code>/.bazelversion           pinned Bazel version used by Bazelisk
+/MODULE.bazel            Bzlmod dependencies and toolchains
+/MODULE.bazel.lock       resolved Bazel module graph
+/BUILD.bazel             root Gazelle, formatting, and aggregate targets
+/cmd/start/main.go
+/internal/auth/          OIDC, claims, sessions
+/internal/http/          Gin routes, middleware, handlers
+/internal/policy/        visibility and management decisions
+/internal/service/       application use cases
+/internal/store/         sqlc-generated code and adapters
+/internal/seed/          links.yaml validation/import
+/internal/observability/ logging, metrics, health
+/db/migrations/          ordered up/down SQL migrations
+/db/queries/             sqlc query files
+/web/                    Vue 3 application
+/web/dist/               production assets embedded at build
+/deploy/                 rules_oci image and release targets
+/tools/                  sqlc, Gazelle, formatting, and verification targets
+/links.yaml              optional initial catalog
+/sqlc.yml                sqlc schema/query/codegen configuration</code></pre>
+          <div class="callout"><strong>Database workflow:</strong> Goose and sqlc are complementary and mandatory. Versioned Goose SQL files define and apply schema migrations at startup or through an explicit command. <code>sqlc.yml</code> points sqlc at the resulting schema and reviewed query files to generate type-safe Go access code; sqlc never applies migrations.</div>
+        </section>
+
+        <section id="data">
+          <h2>8. Data model</h2>
+          <table>
+            <thead><tr><th>Table</th><th>Key fields</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>users</code></td><td><code>id</code>, <code>issuer</code>, <code>subject</code>, <code>email</code>, <code>display_name</code>, <code>claims_refreshed_at</code>, timestamps</td><td>Unique on <code>(issuer, subject)</code>. Identity profile refreshed from Tinyauth.</td></tr>
+              <tr><td><code>sessions</code></td><td>hashed token, <code>user_id</code>, expiry, last_seen</td><td>Store only a hash of the browser token; purge expired rows.</td></tr>
+              <tr><td><code>roles</code>, <code>teams</code></td><td><code>id</code>, unique <code>slug</code>, display name</td><td>Normalized identity/audience vocabulary.</td></tr>
+              <tr><td><code>user_oidc_groups</code></td><td><code>user_id</code>, exact group value, <code>claim_seen_at</code></td><td>Replace transactionally from the latest validated <code>groups</code> claim; not itself a grant.</td></tr>
+              <tr><td><code>identity_group_mappings</code></td><td>exact group value, target type, target ID</td><td>Maps IdP groups to roles or teams. Unique per group/target tuple.</td></tr>
+              <tr><td><code>user_roles</code>, <code>user_teams</code></td><td><code>user_id</code>, role/team ID, source, <code>last_seen_at</code></td><td>Effective audience attributes derived from current mappings; stale IdP rows are removed at claim refresh.</td></tr>
+              <tr><td><code>groups</code></td><td><code>id</code>, unique slug, name, description</td><td>Link ownership and delegated administration.</td></tr>
+              <tr><td><code>categories</code></td><td><code>id</code>, unique slug, name, description, color, sort order</td><td>Soft-disable rather than delete while referenced.</td></tr>
+              <tr><td><code>admin_grants</code></td><td>source type, user ID or exact IdP group value, capability, optional group/category target</td><td>Represents both direct local grants and IdP-group mappings with constraints appropriate to system/group/category scope.</td></tr>
+              <tr><td><code>links</code></td><td><code>id</code>, title, URL, description, icon fields, <code>category_id</code>, <code>owner_group_id</code>, enabled, revision, <code>deleted_at</code>, timestamps</td><td>URI max 2,048 chars. Revision supports optimistic concurrency; deleted rows are excluded normally.</td></tr>
+              <tr><td><code>link_revisions</code></td><td><code>link_id</code>, revision, action, full snapshot JSON, actor, timestamp</td><td>Immutable revision history for create/update/delete/restore. Unique on link and revision.</td></tr>
+              <tr><td><code>tags</code>, <code>link_tags</code></td><td>tag slug/name; link/tag IDs</td><td>Unique normalized tag slug.</td></tr>
+              <tr><td><code>link_roles</code>, <code>link_teams</code></td><td>link and audience IDs</td><td>Empty sets mean all authenticated users for that dimension.</td></tr>
+              <tr><td><code>user_hidden_links</code></td><td><code>user_id</code>, <code>link_id</code>, timestamp</td><td>Preserved through soft deletion and restore so personal intent is not lost.</td></tr>
+              <tr><td><code>user_preferences</code></td><td><code>user_id</code>, typed preference columns, revision, updated_at</td><td>Prefer typed columns over an unconstrained JSON blob for v1.</td></tr>
+              <tr><td><code>app_settings</code></td><td>singleton ID, branding and global defaults, revision</td><td>Logo path/reference only; uploaded file is separately validated.</td></tr>
+              <tr><td><code>audit_events</code></td><td>ID, actor, action, target type/ID, before/after JSON, request ID, timestamp</td><td>Append-only through the app. Redact secrets and session material.</td></tr>
+              <tr><td><code>goose_db_version</code></td><td>version, applied state, timestamp</td><td>Owned by Goose.</td></tr>
+            </tbody>
+          </table>
+          <h3>Integrity and deletion</h3>
+          <ul>
+            <li>Enable <code>PRAGMA foreign_keys = ON</code> on every connection.</li>
+            <li>Categories and groups referenced by links use <code>ON DELETE RESTRICT</code>; joins use appropriate cascade deletion only during an explicit maintenance purge.</li>
+            <li>Link deletion is a recoverable soft delete after confirmation and authorization. It sets <code>deleted_at</code> and writes a delete revision in the same transaction.</li>
+            <li>Restoring any historical snapshot writes its fields back to the current link, clears <code>deleted_at</code> when appropriate, and appends a new restore revision. Revision rows are never edited in place.</li>
+            <li>All timestamps are UTC RFC 3339 at boundaries and integer/time types internally.</li>
+            <li>Writes that affect link plus tags/audience rules run in one transaction.</li>
+          </ul>
+        </section>
+
+        <section id="api">
+          <h2>9. HTTP API</h2>
+          <p>All application endpoints are under <code>/api/v1</code>, return JSON, and require an authenticated session unless noted. Errors use <code>{"error":{"code":"...","message":"...","requestId":"...","fields":{...}}}</code>.</p>
+          <table>
+            <thead><tr><th>Method and path</th><th>Purpose</th><th>Authorization</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /api/v1/bootstrap</code></td><td>Current user, effective capabilities, branding, preferences, categories, and authorized links.</td><td>User</td></tr>
+              <tr><td><code>GET /api/v1/links</code></td><td>Authorized links; optional category and hidden filters.</td><td>User</td></tr>
+              <tr><td><code>POST /api/v1/links</code></td><td>Create a link.</td><td>Group or system admin</td></tr>
+              <tr><td><code>PUT /api/v1/links/{id}</code></td><td>Replace editable fields using revision precondition.</td><td>Effective link manager</td></tr>
+              <tr><td><code>DELETE /api/v1/links/{id}</code></td><td>Soft-delete a link and append a revision. UI confirmation is required but server authorization is decisive.</td><td>Effective link manager</td></tr>
+              <tr><td><code>GET /api/v1/links/{id}/revisions</code></td><td>List revision metadata and retrieve an authorized historical snapshot.</td><td>Effective link manager</td></tr>
+              <tr><td><code>POST /api/v1/links/{id}/restore/{revision}</code></td><td>Restore a historical snapshot as a new current revision.</td><td>Effective link manager</td></tr>
+              <tr><td><code>GET /api/v1/link-history</code></td><td>List all revision snapshots for links within the administrator’s effective scope, including deleted links.</td><td>Scoped or system admin</td></tr>
+              <tr><td><code>POST /api/v1/link-history/restore</code></td><td>Atomically restore one selected revision for each supplied link; reject the entire request if authorization or a current-revision precondition fails.</td><td>Effective manager for every selected link</td></tr>
+              <tr><td><code>POST /api/v1/catalog/import</code></td><td>Validate and atomically merge a raw YAML catalog of at most 1 MiB; return created, updated, restored, and unchanged counts.</td><td>System admin with fresh identity claims</td></tr>
+              <tr><td><code>PUT /api/v1/me/hidden-links/{id}</code></td><td>Hide link for current user.</td><td>User who can currently resolve link</td></tr>
+              <tr><td><code>DELETE /api/v1/me/hidden-links/{id}</code></td><td>Restore hidden link.</td><td>User</td></tr>
+              <tr><td><code>GET /api/v1/me/preferences</code></td><td>Get server-side preferences and revision.</td><td>User</td></tr>
+              <tr><td><code>PUT /api/v1/me/preferences</code></td><td>Validate and save complete preference set.</td><td>User</td></tr>
+              <tr><td><code>/api/v1/admin/categories</code></td><td>CRUD categories and delegated category admins.</td><td>System admin; scoped edits may be added later</td></tr>
+              <tr><td><code>/api/v1/admin/groups</code></td><td>CRUD owner groups and group-admin assignments.</td><td>System admin</td></tr>
+              <tr><td><code>/api/v1/admin/grants</code></td><td>Manage local user grants and mappings from exact OIDC group values to administrative capabilities.</td><td>System admin</td></tr>
+              <tr><td><code>GET /auth/login</code>, <code>GET /auth/callback</code>, <code>POST /auth/logout</code></td><td>OIDC lifecycle.</td><td>Public callback / active session as applicable</td></tr>
+              <tr><td><code>GET /healthz</code></td><td>Liveness only; no database dependency.</td><td>Public, minimal response</td></tr>
+              <tr><td><code>GET /readyz</code></td><td>Database open, migrations complete, required configuration valid.</td><td>Network-restricted</td></tr>
+              <tr><td><code>GET /metrics</code></td><td>Prometheus metrics.</td><td>Disabled, network-restricted, or separately authenticated</td></tr>
+            </tbody>
+          </table>
+          <p>List endpoints support ETags or <code>updatedSince</code> later, but correctness must not depend on client caching. Updates use <code>If-Match</code> or a body revision; stale writes return <code>409 Conflict</code> with current metadata.</p>
+        </section>
+
+        <section id="seed">
+          <h2>10. <code>links.yaml</code> seeding</h2>
+          <p>On startup after migrations, the application checks for application data in one transaction. If categories, groups, and links are all empty and a configured seed file exists, it validates the entire document and imports it atomically. Invalid input fails readiness with actionable line/path errors. If any application data exists, the seed file is ignored and a structured informational event is logged.</p>
+          <pre><code>version: 1
+categories:
+  - slug: development
+    name: Development
+    color: "#3b82f6"
+    order: 10
+groups:
+  - slug: platform
+    name: Platform
+links:
+  - slug: stirling-pdf
+    title: Stirling PDF
+    url: https://pdf.internal.example
+    description: Internal PDF toolbox
+    category: development
+    ownerGroup: platform
+    icon:
+      provider: material
+      name: picture_as_pdf
+      color: "#ef4444"
+    tags: [pdf, documents]
+    audience:
+      roles: []
+      teams: []</code></pre>
+          <ul>
+            <li><code>version</code> is mandatory and unsupported versions are rejected.</li>
+            <li>Slugs are stable lowercase identifiers matching <code>[a-z0-9][a-z0-9-]{0,62}</code>.</li>
+            <li>References must resolve within the file. Duplicate slugs, malformed colors, invalid icons, and disallowed URL schemes reject the entire seed.</li>
+            <li>The seed does not assign administrators by email. Initial system admins come from configured identity-group mapping.</li>
+            <li>An explicit CLI command and system-admin web dialog support merge imports. Both leave omitted records unchanged; startup never merges automatically.</li>
+          </ul>
+        </section>
+
+        <section id="configuration">
+          <h2>11. Configuration</h2>
+          <table>
+            <thead><tr><th>Setting</th><th>Example / default</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>STARTPAGE_BASE_URL</code></td><td><code>https://start.example.com</code></td><td>Canonical external origin and OIDC callback base.</td></tr>
+              <tr><td><code>STARTPAGE_LISTEN_ADDR</code></td><td><code>:8080</code></td><td>HTTP listener behind the TLS proxy.</td></tr>
+              <tr><td><code>STARTPAGE_DATABASE_PATH</code></td><td><code>/data/startpage.db</code></td><td>Persistent SQLite database path.</td></tr>
+              <tr><td><code>STARTPAGE_SEED_PATH</code></td><td><code>/config/links.yaml</code></td><td>Optional initial seed.</td></tr>
+              <tr><td><code>STARTPAGE_OIDC_ISSUER</code></td><td>Tinyauth issuer URL</td><td>OIDC discovery and issuer validation.</td></tr>
+              <tr><td><code>STARTPAGE_OIDC_CLIENT_ID</code></td><td>Secret/config injection</td><td>OIDC client identifier.</td></tr>
+              <tr><td><code>STARTPAGE_OIDC_CLIENT_SECRET_FILE</code></td><td><code>/run/secrets/oidc</code></td><td>Preferred file-based secret; environment fallback may be supported.</td></tr>
+              <tr><td><code>STARTPAGE_OIDC_SCOPES</code></td><td><code>openid profile email groups</code></td><td>Requested identity claims.</td></tr>
+              <tr><td><code>STARTPAGE_OIDC_LOGOUT_URL</code></td><td><code>https://auth.example.com/logout</code></td><td>Trusted Tinyauth browser logout route used to initiate Pocket ID RP logout.</td></tr>
+              <tr><td><code>STARTPAGE_CLAIM_GROUPS</code></td><td><code>groups</code></td><td>Exact string-array claim used by role, team, and administrative grant mappings.</td></tr>
+              <tr><td><code>STARTPAGE_ADMIN_GROUPS</code></td><td><code>start-admins</code></td><td>Bootstrap IdP group values granting system-admin status so the first database mappings can be managed.</td></tr>
+              <tr><td><code>STARTPAGE_CLAIM_MAX_AGE</code></td><td><code>15m</code></td><td>Maximum age before ordinary IdP-derived attributes must refresh.</td></tr>
+              <tr><td><code>STARTPAGE_ADMIN_CLAIM_MAX_AGE</code></td><td><code>5m</code></td><td>Maximum claim age accepted for an administrative mutation.</td></tr>
+              <tr><td><code>STARTPAGE_BLOCKED_URL_SCHEMES</code></td><td><code>javascript,data,vbscript</code></td><td>Safety blocklist. HTTP, HTTPS, file, and other syntactically valid schemes are otherwise allowed.</td></tr>
+              <tr><td><code>STARTPAGE_AUDIT_RETENTION</code></td><td><code>8760h</code> (365 days)</td><td>Default audit-event retention; link revisions use separate indefinite retention.</td></tr>
+              <tr><td><code>STARTPAGE_TRUSTED_PROXIES</code></td><td>Explicit CIDRs</td><td>Which proxies may supply forwarded client/scheme information.</td></tr>
+              <tr><td><code>STARTPAGE_METRICS_ENABLED</code></td><td><code>false</code></td><td>Opt-in metrics endpoint.</td></tr>
+              <tr><td><code>STARTPAGE_LOG_LEVEL</code></td><td><code>info</code></td><td>Structured log verbosity.</td></tr>
+            </tbody>
+          </table>
+          <p>Configuration is validated before serving traffic. Secrets are never printed. Environment variables override a non-secret configuration file; command-line flags are limited to operational commands such as <code>serve</code>, <code>migrate</code>, and <code>version</code>.</p>
+          <h3>Deployment automation contract</h3>
+          <p>Environment-specific deployment automation should remain declarative rather than relying on one-off shell steps:</p>
+          <ul>
+            <li>Define the Start hostname, target hosts, image reference, trusted proxies, and bootstrap administrator group in private inventory variables.</li>
+            <li>Add the hostname to authoritative DNS and grant the certificate updater permission for its ACME challenge records before requesting the certificate.</li>
+            <li>Declare a Tinyauth OIDC client named <code>start</code> with display name <code>Start</code>, stable client credentials, and trusted redirect URI <code>https://start.example.com/auth/callback</code>.</li>
+            <li>Generate the Start client ID/secret once, store them in a secret manager, and render them into both Tinyauth and Start without logging them. Re-running automation must not rotate credentials unintentionally.</li>
+            <li>Manage the Pocket ID <code>start-admins</code> group declaratively through its authenticated API. Look up by exact group name, create only when missing, and converge an optional authoritative username list when configured.</li>
+            <li>Add a Start service playbook for its persistent database directory, environment/secret files, container, systemd unit, reverse-proxy hostname, readiness validation, and backup path.</li>
+            <li>Do not add Start to Tinyauth’s forward-auth <code>tinyauth_apps</code> list. Start is itself an OIDC client; wrapping it in forward-auth would create two independent authentication layers.</li>
+            <li>Apply in dependency order: Pocket ID group → Tinyauth OIDC client/credentials → Start deployment → readiness and OIDC smoke test.</li>
+          </ul>
+        </section>
+
+        <section id="operations">
+          <h2>12. Operations and observability</h2>
+          <h3>Health</h3>
+          <ul>
+            <li><code>/healthz</code> returns process liveness with no identity or dependency details.</li>
+            <li><code>/readyz</code> fails until configuration, migrations, database read/write test, seed decision, and asset availability succeed.</li>
+            <li>Destination links are not part of application readiness.</li>
+          </ul>
+          <h3>Metrics</h3>
+          <ul>
+            <li>Request count and duration by method, normalized route, and status class.</li>
+            <li>Active sessions; login success/failure; database operation duration/error count; seed outcome.</li>
+            <li>Link create/update/delete/restore counts and authorization denials, without link URLs, queries, email addresses, or subjects as labels.</li>
+            <li>Go runtime/process metrics. Keep metric labels bounded to prevent cardinality growth.</li>
+          </ul>
+          <h3>Structured request logging</h3>
+          <p>Emit JSON in production with timestamp, level, request ID, trace ID when available, method, normalized route, status, duration, response bytes, client IP only when policy permits, and a one-way actor reference for authenticated actions. Never log cookies, tokens, secrets, raw query text, full URLs submitted as links, or complete error stacks to clients.</p>
+          <h3>Audit and revision retention</h3>
+          <ul>
+            <li>Retain audit events for 365 days by default, configurable by duration. A daily maintenance task purges expired audit events in bounded batches.</li>
+            <li>Retain link revisions indefinitely by default. No normal v1 UI action permanently purges a link or its revision history.</li>
+            <li>Revision restore remains link-scoped even when submitted as a batch: the administrator selects exactly which links to restore, each selected snapshot creates a new head revision, and the transaction changes no unselected links. This supports selectively moving several links back without a database-wide rollback.</li>
+            <li>A future operator-only purge command may remove revisions after backup, but it is not required for v1.</li>
+          </ul>
+          <h3>Backups and recovery</h3>
+          <ul>
+            <li>Document SQLite online backup or <code>VACUUM INTO</code> procedures; do not copy a live WAL database as one file.</li>
+            <li>Back up database, uploaded branding assets, and operator configuration. The seed is not a backup after initialization.</li>
+            <li>Before migration, create a verified backup unless the operator explicitly disables it.</li>
+            <li>Provide a startup check and documented restore drill.</li>
+          </ul>
+          <h3>Error pages</h3>
+          <p>Browser pages use current branding, a plain explanation, safe next action, and request ID. The 404 page offers Home and Search. The 403 page does not reveal whether a hidden resource exists. The 5xx page does not expose stack traces or internal paths.</p>
+        </section>
+
+        <section id="security">
+          <h2>13. Security requirements</h2>
+          <ul class="checklist">
+            <li>Validate OIDC metadata and tokens with a maintained library; require exact issuer and expected audience/client ID.</li>
+            <li>Use authorization code flow, PKCE where supported, random state and nonce, short callback lifetime, and replay protection.</li>
+            <li>Enforce server-side visibility and mutation policy on every request. Do not treat hidden UI controls as authorization.</li>
+            <li>Use bound SQL parameters, transactional writes, and explicit allowlists for sortable/filterable column names.</li>
+            <li>Allow HTTP, HTTPS, and other well-formed destination schemes globally. Reject browser-executable <code>javascript:</code>, <code>data:</code>, and <code>vbscript:</code> schemes plus embedded credentials, because rendering those as links would cross the application’s code-execution or credential-leak boundary.</li>
+            <li>Escape all text. Descriptions and branding text are plain text in v1; no arbitrary HTML or SVG uploads.</li>
+            <li>If logo upload is enabled, decode and re-encode supported raster formats, enforce size/dimensions, generate a random filename, and serve with a fixed safe content type.</li>
+            <li>Set Content-Security-Policy, frame-ancestors, nosniff, strict referrer policy, and HSTS when HTTPS termination is correctly detected.</li>
+            <li>Bundle fonts/icons/assets locally by default so the dashboard works without internet access and does not leak browsing metadata.</li>
+            <li>Rate-limit login initiation/callback errors and mutations; cap body sizes and field lengths.</li>
+            <li>Trust forwarded headers only from configured proxies. Reject inconsistent host/origin values.</li>
+            <li>Record administrative actions in an append-only audit trail, with a configurable retention policy.</li>
+            <li>Run as non-root with a read-only root filesystem, minimal container image, pinned dependencies, and automated vulnerability scanning.</li>
+          </ul>
+          <div class="callout danger"><strong>Boundary:</strong> visibility rules personalize and conceal directory entries; they do not authorize the linked applications. Every destination service must enforce its own authentication and authorization, commonly through Tinyauth/Pocket ID or native OIDC.</div>
+        </section>
+
+        <section id="quality">
+          <h2>14. Quality attributes</h2>
+          <table>
+            <thead><tr><th>Area</th><th>Target</th></tr></thead>
+            <tbody>
+              <tr><td>Performance</td><td>Server p95 under 200 ms for normal authenticated reads at 50 concurrent users on a small home-lab VM; search interaction under 100 ms for 5,000 authorized links.</td></tr>
+              <tr><td>Availability</td><td>Graceful shutdown, 10-second default drain, database transactions finish or roll back, readiness removed before exit.</td></tr>
+              <tr><td>Accessibility</td><td>WCAG 2.2 AA target: semantic landmarks, logical focus, visible focus, dialog semantics, text alternatives, contrast, reduced motion, and no color-only status.</td></tr>
+              <tr><td>Browser support</td><td>Latest two stable releases of Chrome/Edge, Firefox, and Safari; responsive from 320 px width.</td></tr>
+              <tr><td>Localization</td><td>English in v1; UI strings centralized and dates formatted through <code>Intl</code> so later localization is possible.</td></tr>
+              <tr><td>Data capacity</td><td>5,000 links, 500 categories, 500 groups, and 10,000 known identities without architecture changes.</td></tr>
+              <tr><td>Startup</td><td>Under 5 seconds on normal persistent storage, excluding a required operator-approved migration/backup delay.</td></tr>
+              <tr><td>Distribution</td><td>Linux amd64/arm64 container; optional single binary with embedded frontend; deterministic version/build metadata.</td></tr>
+            </tbody>
+          </table>
+          <h3>Icon fallback order</h3>
+          <ol>
+            <li>Configured and valid Devicon / Font Awesome Free / Material icon.</li>
+            <li>Locally cached or server-fetched favicon only if an operator explicitly enables favicon fetching; protect against SSRF and private-address surprises.</li>
+            <li>Deterministic monogram using the first meaningful title character and a color derived from the hostname.</li>
+            <li>Generic link icon.</li>
+          </ol>
+          <p>For v1, prefer options 1, 3, and 4. Automatic server-side favicon fetching adds meaningful SSRF and caching complexity and should remain disabled until separately designed.</p>
+        </section>
+
+        <section id="testing">
+          <h2>15. Verification strategy</h2>
+          <div class="grid-2">
+            <div>
+              <h3>Backend</h3>
+              <ul>
+                <li>Table-driven unit tests for visibility and management policy matrices.</li>
+                <li>OIDC callback tests for invalid issuer, audience, signature, nonce, state, expiry, and missing claims.</li>
+                <li>Repository integration tests against temporary SQLite with migrations applied.</li>
+                <li>Seed tests for empty/non-empty databases, atomic failure, references, and version handling.</li>
+                <li>Grant-source tests for local and OIDC-group authority, claim-age enforcement, group removal, and scoped capability unions.</li>
+                <li>Revision tests proving create/update/delete/restore snapshots are immutable, ordered, transactional, and restorable in either direction.</li>
+                <li>HTTP contract tests covering status codes, JSON errors, CSRF, concurrency conflicts, and information leakage.</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Frontend and end-to-end</h3>
+              <ul>
+                <li>Component tests for cards, toggles, form validation, icon fallbacks, and dialogs.</li>
+                <li>Search ranking, diacritics, typo tolerance, single-result Enter, focus guards, empty queries, the complete hotkey map, and shortcut-disable preference.</li>
+                <li>End-to-end role matrix for user, group admin, category admin, and system admin.</li>
+                <li>Mobile/desktop visual regression for all four themes and custom branding.</li>
+                <li>Automated accessibility checks plus manual keyboard and screen-reader smoke tests.</li>
+              </ul>
+            </div>
+          </div>
+          <h3>Release gates</h3>
+          <ul>
+            <li><code>bazel test //...</code>, the applicable Go race-test target, static analysis, frontend typecheck/lint/tests, sqlc generated-code check, migration verification, and production image build pass.</li>
+            <li>Fresh install, upgrade from previous schema, backup/restore, and rollback documentation are exercised.</li>
+            <li>No critical/high known vulnerabilities without a written, time-bounded exception.</li>
+            <li>Acceptance criteria below pass in an environment using Tinyauth with Pocket ID upstream.</li>
+          </ul>
+        </section>
+
+        <section id="delivery">
+          <h2>16. Delivery plan</h2>
+          <table>
+            <thead><tr><th>Milestone</th><th>Deliverable</th><th>Exit condition</th></tr></thead>
+            <tbody>
+              <tr><td>1. Foundation</td><td>Bzlmod/Bazel toolchains, Go/Vue skeleton, embedded assets, config validation, Goose/sqlc, logging, health, and CI.</td><td><code>bazel build //cmd/start //web:dist //deploy:image</code> and <code>bazel test //...</code> pass; the container migrates empty SQLite, serves the shell, and reports readiness.</td></tr>
+              <tr><td>2. Identity</td><td>Tinyauth OIDC, Pocket ID claims, sessions, user reconciliation, policy engine.</td><td>All four role types pass policy matrix tests; unauthorized data is filtered server-side.</td></tr>
+              <tr><td>3. Directory</td><td>Seed import, browse modes, card components, icon system, fuzzy search, keyboard behavior.</td><td>A seeded user can find/open authorized links and cannot retrieve unauthorized ones.</td></tr>
+              <tr><td>4. Management</td><td>Link/category/group CRUD, delegated grants, rule builder, confirmation, immutable link revisions, and audit events.</td><td>Scoped admins can maintain only permitted records, deleted links can be restored, and conflicts are safely handled.</td></tr>
+              <tr><td>5. Personalization</td><td>Hide/show, local + server preferences, four themes, branding.</td><td>Preferences survive reload and follow the same identity to a second browser.</td></tr>
+              <tr><td>6. Hardening</td><td>Metrics, error pages, accessibility, security headers, backups, multi-arch image, docs.</td><td>Release gates and v1 acceptance criteria pass.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="acceptance">
+          <h2>17. v1 acceptance criteria</h2>
+          <ol>
+            <li>Given a logged-out browser, visiting the app starts OIDC login and returns to the original safe relative path after successful Tinyauth/Pocket ID authentication.</li>
+            <li>Given identity roles/teams, the bootstrap and link APIs return exactly the links allowed by the documented visibility expression.</li>
+            <li>Given a query matching title, description, URL, or tag, results update and rank predictably; Enter opens only when one result remains or a result is explicitly selected.</li>
+            <li>Using only a keyboard from the loaded dashboard, a user can discover shortcuts, focus and clear search, move through links, open a link, toggle views, hide/restore a link, operate menus and dialogs, and complete permitted create/edit workflows. Single-character shortcuts do not fire while typing and can be disabled.</li>
+            <li>A user can switch categorized/flat view, hide and restore a link, change every display preference, reload, and observe the same state.</li>
+            <li>The same identity opening a second browser receives preferences from SQLite; local storage accelerates startup but does not attach preferences to a different identity.</li>
+            <li>Local and OIDC-group grants combine as documented. Removing a user from a mapped Pocket ID group removes the derived authority after claim refresh without deleting any separate local grant.</li>
+            <li>A group admin can maintain links in their groups but receives 403 for another group. A category admin can edit links in their category but can create only when they also administer the selected owner group. A system admin can manage all records.</li>
+            <li>Deleting a link requires a named confirmation, returns a useful conflict if the record changed, soft-deletes transactionally, and writes both an audit event and immutable revision. The global admin history shows every manageable link change; an admin can select historical snapshots for three links, restore them atomically, and observe that all unselected links remain unchanged.</li>
+            <li>Dark, Light, Hacker, and 1984 themes render at mobile and desktop sizes with WCAG AA contrast for normal controls and text.</li>
+            <li>When a valid <code>links.yaml</code> exists and the database is empty, it imports once. Restart preserves UI edits. Invalid seed data imports nothing and fails readiness clearly.</li>
+            <li>Devicon, Font Awesome, and Material choices render offline; an unknown icon falls back to a stable monogram or generic link symbol without broken-image UI.</li>
+            <li>Liveness, readiness, metrics policy, structured request logs, request IDs, branded errors, and the custom 404 behave as specified without exposing secrets or personal data.</li>
+            <li>The documented container deployment works on amd64 and arm64 with a persistent SQLite volume and a successful backup/restore exercise.</li>
+            <li>From a clean checkout with Bazelisk but no separately installed Go, Node, pnpm, sqlc, or Goose tools, the documented Bazel targets build the binary/frontend/image, run all tests, and verify generated SQL code and migrations reproducibly.</li>
+            <li>The documented deployment automation converges idempotently, preserves existing OIDC credentials, creates the <code>start-admins</code> Pocket ID group when absent, and completes an authenticated readiness smoke test.</li>
+          </ol>
+        </section>
+
+        <section id="decisions">
+          <h2>18. Recorded decisions and open items</h2>
+          <h3>Recorded for this draft</h3>
+          <ul>
+            <li><strong>Product name:</strong> the product and default browser title are <strong>Start</strong>; “internal start page” remains the descriptive category.</li>
+            <li><strong>Canonical deployment:</strong> Start is served as a container behind an operator-managed HTTPS reverse proxy.</li>
+            <li><strong>Build system:</strong> Bazel with Bzlmod is the canonical build/test/codegen/image interface, using rules_go + Gazelle, aspect_rules_js + pnpm, and rules_oci.</li>
+            <li><strong>Tinyauth spelling and role:</strong> Tinyauth is the OIDC-facing authentication service; Pocket ID may be its upstream provider.</li>
+            <li><strong>Target claims:</strong> the identity deployment supplies <code>sub</code>, <code>email</code>, profile/name, and <code>groups</code> through Tinyauth. Roles, teams, and administrative grants derive from explicit mappings of exact <code>groups</code> values.</li>
+            <li><strong>Stable identity:</strong> preferences and admin assignments key to OIDC issuer + subject, not email.</li>
+            <li><strong>Ownership vs visibility:</strong> owner groups govern maintenance; roles and teams govern personalization.</li>
+            <li><strong>Category creation:</strong> category administration alone does not permit creation; the creator must administer the selected owner group.</li>
+            <li><strong>Audience semantics:</strong> OR within roles/teams, AND across the two populated dimensions.</li>
+            <li><strong>Grant sources:</strong> effective administrative authority is the union of local user grants and current mapped IdP-group grants.</li>
+            <li><strong>Database evolution:</strong> Goose SQL migration files apply schema changes; <code>sqlc.yml</code> configures type-safe query generation. Both are required.</li>
+            <li><strong>Destination schemes:</strong> HTTP, HTTPS, and other destination schemes are accepted globally; browser-executable schemes remain blocked.</li>
+            <li><strong>Recoverability:</strong> link deletion is soft deletion, every change stores an immutable snapshot, and restoration appends a new revision.</li>
+            <li><strong>Libraries:</strong> Gin, go-oidc/x/oauth2, SCS with a sqlc store, modernc SQLite, sqlc, Goose, <code>log/slog</code>, Prometheus client_golang, and Fuse.js.</li>
+            <li><strong>Deployment identity automation:</strong> Ansible defines the Tinyauth OIDC client, authoritatively manages configured members of the Pocket ID <code>start-admins</code> group, and provisions the DNS/ACME records; Start is not double-wrapped with forward-auth.</li>
+            <li><strong>Service integration:</strong> the app links to Stirling and other services; it does not provision them.</li>
+            <li><strong>Offline assets:</strong> icon/font resources are bundled rather than loaded from public CDNs.</li>
+          </ul>
+          <h3>Non-blocking items before first release</h3>
+          <ul>
+            <li>Confirm the source-control namespace/module path and project license; neither blocks local foundation work.</li>
+            <li>Populate application-specific role/team mappings beyond the decided <code>start-admins</code> bootstrap group as real teams are onboarded.</li>
+            <li>Define and privacy-review the later VPN/network-status heuristic; it remains explicitly outside v1.</li>
+          </ul>
+        </section>
+      </main>
+    </div>
+    <footer>Start specification · self-contained HTML · ready for implementation</footer>
+  </div>
+</body>
+</html>
