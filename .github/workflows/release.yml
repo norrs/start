@@ -1,0 +1,133 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Semantic-version bump (auto uses Conventional Commits)
+        required: true
+        default: auto
+        type: choice
+        options:
+          - auto
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write
+  packages: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Test, build, and release
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out complete history
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Select semantic version
+        id: version
+        env:
+          REQUESTED_BUMP: ${{ inputs.bump }}
+        run: |
+          latest=$(git tag --merged HEAD --sort=-version:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1 || true)
+          current=${latest:-0.0.0}
+          range=HEAD
+          if [[ -n "$latest" ]]; then
+            range="$latest..HEAD"
+            count=$(git log "$range" --format='%H' --invert-grep --grep='^chore(release): document v[0-9]')
+            if [[ -z "$count" ]]; then
+              echo "There are no releasable commits after $latest" >&2
+              exit 1
+            fi
+          fi
+          git log "$range" --format='%s%n%b%n--- end commit ---' \
+            --invert-grep --grep='^chore(release): document v[0-9]' > "$RUNNER_TEMP/release-commits.txt"
+          version=$(tools/release/next-version.sh "$REQUESTED_BUMP" "$current" "$RUNNER_TEMP/release-commits.txt")
+          major=${version%%.*}
+          remainder=${version#*.}
+          minor=${remainder%%.*}
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
+          echo "major=$major" >> "$GITHUB_OUTPUT"
+          echo "major_minor=$major.$minor" >> "$GITHUB_OUTPUT"
+
+      - name: Configure Bazel
+        uses: bazel-contrib/setup-bazel@0.19.0
+        with:
+          bazelisk-cache: true
+          disk-cache: ${{ github.workflow }}
+          repository-cache: true
+
+      - name: Run all tests
+        run: bazel test //:all_tests --test_output=errors --test_env=CI=true
+
+      - name: Build release image
+        run: bazel build --config=release //deploy:image_index //deploy:push
+
+      - name: Ensure main has not changed during verification
+        run: |
+          remote_sha=$(git ls-remote origin refs/heads/main | cut -f1)
+          if [[ "$remote_sha" != "$GITHUB_SHA" ]]; then
+            echo "main advanced during release verification; run the workflow again" >&2
+            exit 1
+          fi
+
+      - name: Sign in to GitHub Container Registry
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "$GH_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+
+      - name: Publish multi-architecture container image
+        env:
+          IMAGE: ghcr.io/${{ github.repository }}
+          VERSION: ${{ steps.version.outputs.version }}
+          MAJOR: ${{ steps.version.outputs.major }}
+          MAJOR_MINOR: ${{ steps.version.outputs.major_minor }}
+        run: |
+          image=${IMAGE,,}
+          bazel run --config=release //deploy:push -- \
+            --repository "$image" \
+            --tag "$VERSION" \
+            --tag "$MAJOR_MINOR" \
+            --tag "$MAJOR" \
+            --tag latest
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.version.outputs.tag }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          notes=""
+          if [[ -f "docs/releases/$TAG.md" ]]; then
+            notes="docs/releases/$TAG.md"
+          elif [[ -f "docs/releases/$VERSION.md" ]]; then
+            notes="docs/releases/$VERSION.md"
+          fi
+          if [[ -n "$notes" ]]; then
+            gh release create "$TAG" --target "$GITHUB_SHA" --title "$TAG" --notes-file "$notes"
+          else
+            gh release create "$TAG" --target "$GITHUB_SHA" --title "$TAG" --generate-notes
+          fi
+
+      - name: Document latest release on main
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          tools/release/update-readme.sh "$VERSION" "$GITHUB_REPOSITORY"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add README.md
+          git commit -m "chore(release): document v$VERSION [skip ci]"
+          git push origin HEAD:main
