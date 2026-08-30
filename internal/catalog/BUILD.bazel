@@ -1,0 +1,28 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "catalog",
+    srcs = [
+        "store.go",
+        "types.go",
+    ],
+    importpath = "github.com/norrs/start/internal/catalog",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/db",
+        "//internal/policy",
+        "//internal/seed",
+    ],
+)
+
+go_test(
+    name = "catalog_test",
+    srcs = ["store_test.go"],
+    embed = [":catalog"],
+    deps = [
+        "//db/migrations",
+        "//internal/policy",
+        "//internal/seed",
+        "@org_modernc_sqlite//:sqlite",
+    ],
+)

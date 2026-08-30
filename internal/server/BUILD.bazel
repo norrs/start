@@ -1,0 +1,24 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "server",
+    srcs = [
+        "context.go",
+        "server.go",
+    ],
+    importpath = "github.com/norrs/start/internal/server",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/auth",
+        "//internal/catalog",
+        "//internal/config",
+        "//internal/db",
+        "//internal/policy",
+        "//internal/seed",
+        "@com_github_alexedwards_scs_v2//:scs",
+        "@com_github_gin_gonic_gin//:gin",
+        "@com_github_google_uuid//:uuid",
+        "@com_github_prometheus_client_golang//prometheus",
+        "@com_github_prometheus_client_golang//prometheus/promhttp",
+    ],
+)

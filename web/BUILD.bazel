@@ -1,0 +1,112 @@
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("@npm//:defs.bzl", "npm_link_all_packages")
+load("@npm//web:@playwright/test/package_json.bzl", playwright_bin = "bin")
+load("@npm//web:vite/package_json.bzl", vite_bin = "bin")
+load("@npm//web:vitest/package_json.bzl", vitest_bin = "bin")
+load("@npm//web:vue-tsc/package_json.bzl", vue_tsc_bin = "bin")
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+
+npm_link_all_packages(name = "node_modules")
+
+js_library(
+    name = "sources",
+    srcs = glob([
+        "e2e/**",
+        "src/**",
+        "index.html",
+        "*.json",
+        "*.ts",
+    ]),
+    deps = [
+        ":node_modules/@babel/types",
+        ":node_modules/@playwright/test",
+        ":node_modules/@fortawesome/fontawesome-free",
+        ":node_modules/@types/node",
+        ":node_modules/@vitejs/plugin-vue",
+        ":node_modules/@vue/compiler-core",
+        ":node_modules/@vue/compiler-dom",
+        ":node_modules/@vue/server-renderer",
+        ":node_modules/@vue/test-utils",
+        ":node_modules/devicon",
+        ":node_modules/fuse.js",
+        ":node_modules/jsdom",
+        ":node_modules/material-icons",
+        ":node_modules/typescript",
+        ":node_modules/vite",
+        ":node_modules/vitest",
+        ":node_modules/vue",
+        ":node_modules/vue-tsc",
+    ],
+)
+
+vite_bin.vite(
+    name = "dist",
+    srcs = [":sources"],
+    args = ["build"],
+    chdir = package_name(),
+    out_dirs = ["dist"],
+    visibility = ["//visibility:public"],
+)
+
+vue_tsc_bin.vue_tsc_test(
+    name = "typecheck",
+    args = ["-b"],
+    chdir = package_name(),
+    data = [":sources"],
+)
+
+vitest_bin.vitest_test(
+    name = "test",
+    args = ["run"],
+    chdir = package_name(),
+    data = [":sources"],
+)
+
+sh_binary(
+    name = "e2e_server",
+    srcs = ["e2e/server.sh"],
+    data = [
+        "//:links.yaml",
+        "//cmd/start",
+        ":dist",
+        "@bazel_tools//tools/bash/runfiles",
+    ],
+)
+
+playwright_bin.playwright_test(
+    name = "e2e_test",
+    args = [
+        "test",
+        "--config",
+        "playwright.config.ts",
+    ],
+    chdir = package_name(),
+    data = glob([
+        "e2e/**/*.ts",
+    ]) + [
+        "playwright.config.ts",
+        ":e2e_server",
+        ":node_modules/@playwright/test",
+        "@playwright_browsers//:browser_root",
+        "@playwright_browsers//:browsers",
+    ],
+    env = {
+        "PLAYWRIGHT_BROWSERS_PATH": "../$(rootpath @playwright_browsers//:browser_root)/..",
+        "START_E2E_SERVER": "./e2e_server",
+    },
+    size = "large",
+    tags = ["exclusive"],
+)
+
+playwright_bin.playwright_binary(
+    name = "show_trace",
+    args = ["show-trace"],
+    data = [
+        "@playwright_browsers//:browser_root",
+        "@playwright_browsers//:browsers",
+    ],
+    env = {
+        "PLAYWRIGHT_BROWSERS_PATH": "$(rootpath @playwright_browsers//:browser_root)/..",
+    },
+    visibility = ["//visibility:public"],
+)

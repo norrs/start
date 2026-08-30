@@ -1,0 +1,28 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "auth",
+    srcs = ["auth.go"],
+    importpath = "github.com/norrs/start/internal/auth",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/catalog",
+        "//internal/config",
+        "//internal/db",
+        "//internal/policy",
+        "@com_github_alexedwards_scs_v2//:scs",
+        "@com_github_coreos_go_oidc_v3//oidc",
+        "@com_github_gin_gonic_gin//:gin",
+        "@org_golang_x_oauth2//:oauth2",
+    ],
+)
+
+go_test(
+    name = "auth_test",
+    srcs = ["auth_test.go"],
+    embed = [":auth"],
+    deps = [
+        "//internal/config",
+        "//internal/db",
+    ],
+)

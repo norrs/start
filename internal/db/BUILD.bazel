@@ -1,0 +1,13 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "db",
+    srcs = [
+        "core.sql.go",
+        "db.go",
+        "models.go",
+        "querier.go",
+    ],
+    importpath = "github.com/norrs/start/internal/db",
+    visibility = ["//:__subpackages__"],
+)

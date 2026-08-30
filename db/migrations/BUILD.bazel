@@ -1,0 +1,15 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+exports_files(glob(["*.sql"]))
+
+go_library(
+    name = "migrations",
+    srcs = [
+        "embed.go",
+        "goose.go",
+    ],
+    embedsrcs = ["00001_initial.sql"],
+    importpath = "github.com/norrs/start/db/migrations",
+    visibility = ["//visibility:public"],
+    deps = ["@com_github_pressly_goose_v3//:goose"],
+)

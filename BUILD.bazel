@@ -1,0 +1,47 @@
+load("@gazelle//:def.bzl", "gazelle")
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
+
+# gazelle:prefix github.com/norrs/start
+# gazelle:build_file_name BUILD.bazel
+
+gazelle(name = "gazelle")
+
+exports_files(["links.yaml"])
+
+alias(
+    name = "import-links",
+    actual = "//cmd/import-links",
+    visibility = ["//visibility:public"],
+)
+
+sh_binary(
+    name = "dev",
+    srcs = ["tools/dev.sh"],
+    data = [
+        ":links.yaml",
+        "//cmd/start",
+        "//web:dist",
+        "@bazel_tools//tools/bash/runfiles",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "start",
+    actual = "//cmd/start",
+    visibility = ["//visibility:public"],
+)
+
+test_suite(
+    name = "all_tests",
+    tests = [
+        "//internal/auth:auth_test",
+        "//internal/catalog:catalog_test",
+        "//internal/config:config_test",
+        "//internal/policy:policy_test",
+        "//internal/seed:seed_test",
+        "//web:test",
+        "//web:e2e_test",
+        "//web:typecheck",
+    ],
+)

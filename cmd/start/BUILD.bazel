@@ -1,0 +1,40 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_cross_binary", "go_library")
+
+go_library(
+    name = "start_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/norrs/start/cmd/start",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//db/migrations",
+        "//internal/auth",
+        "//internal/catalog",
+        "//internal/config",
+        "//internal/seed",
+        "//internal/server",
+        "//internal/session",
+        "@com_github_alexedwards_scs_v2//:scs",
+        "@org_modernc_sqlite//:sqlite",
+    ],
+)
+
+go_binary(
+    name = "start",
+    embed = [":start_lib"],
+    pure = "on",
+    visibility = ["//visibility:public"],
+)
+
+go_cross_binary(
+    name = "start_linux_amd64",
+    platform = "@rules_go//go/toolchain:linux_amd64",
+    target = ":start",
+    visibility = ["//visibility:public"],
+)
+
+go_cross_binary(
+    name = "start_linux_arm64",
+    platform = "@rules_go//go/toolchain:linux_arm64",
+    target = ":start",
+    visibility = ["//visibility:public"],
+)
