@@ -1,0 +1,128 @@
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_image_index", "oci_load", "oci_push")
+load("@rules_pkg//pkg:mappings.bzl", "REMOVE_BASE_DIRECTORY", "pkg_attributes", "pkg_files")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+
+pkg_files(
+    name = "binary_amd64_files",
+    srcs = ["//cmd/start:start_linux_amd64"],
+    attributes = pkg_attributes(mode = "0755"),
+    prefix = "/app",
+    renames = {"//cmd/start:start_linux_amd64": "start"},
+)
+
+pkg_files(
+    name = "binary_arm64_files",
+    srcs = ["//cmd/start:start_linux_arm64"],
+    attributes = pkg_attributes(mode = "0755"),
+    prefix = "/app",
+    renames = {"//cmd/start:start_linux_arm64": "start"},
+)
+
+pkg_files(
+    name = "web_files",
+    srcs = ["//web:dist"],
+    prefix = "/app/web/dist",
+    renames = {"//web:dist": REMOVE_BASE_DIRECTORY},
+)
+
+pkg_files(
+    name = "seed_files",
+    srcs = ["//:links.yaml"],
+    prefix = "/app",
+)
+
+pkg_tar(
+    name = "app_amd64_layer",
+    srcs = [
+        ":binary_amd64_files",
+        ":seed_files",
+        ":web_files",
+    ],
+)
+
+pkg_tar(
+    name = "app_arm64_layer",
+    srcs = [
+        ":binary_arm64_files",
+        ":seed_files",
+        ":web_files",
+    ],
+)
+
+IMAGE_ENV = {
+    "STARTPAGE_DATABASE_PATH": "/data/start.db",
+    "STARTPAGE_LISTEN_ADDR": ":8080",
+    "STARTPAGE_SEED_PATH": "/app/links.yaml",
+    "STARTPAGE_STATIC_DIR": "/app/web/dist",
+}
+
+IMAGE_LABELS = {
+    "org.opencontainers.image.description": "Start internal link dashboard",
+    "org.opencontainers.image.source": "https://github.com/norrs/start",
+    "org.opencontainers.image.title": "Start",
+}
+
+oci_image(
+    name = "image_amd64",
+    base = "@start_distroless_static_linux_amd64",
+    entrypoint = ["/app/start"],
+    env = IMAGE_ENV,
+    exposed_ports = ["8080/tcp"],
+    labels = IMAGE_LABELS,
+    tars = [":app_amd64_layer"],
+    user = "65532:65532",
+    volumes = ["/data"],
+    workdir = "/app",
+)
+
+oci_image(
+    name = "image_arm64",
+    base = "@start_distroless_static_linux_arm64",
+    entrypoint = ["/app/start"],
+    env = IMAGE_ENV,
+    exposed_ports = ["8080/tcp"],
+    labels = IMAGE_LABELS,
+    tars = [":app_arm64_layer"],
+    user = "65532:65532",
+    volumes = ["/data"],
+    workdir = "/app",
+)
+
+alias(
+    name = "image",
+    actual = ":image_amd64",
+    visibility = ["//visibility:public"],
+)
+
+oci_image_index(
+    name = "image_index",
+    images = [
+        ":image_amd64",
+        ":image_arm64",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+oci_load(
+    name = "load",
+    image = ":image_amd64",
+    repo_tags = [
+        "localhost/start:dev",
+        "start:dev",
+    ],
+)
+
+oci_push(
+    name = "push",
+    image = ":image_index",
+    repository = "ghcr.io/norrs/start",
+    visibility = ["//visibility:public"],
+)
+
+exports_files([
+    "compose.example.yaml",
+    "quickstart/docker-compose.dev.yaml",
+    "quickstart/docker-compose.yaml",
+    "quickstart/start.env.example",
+    "quickstart/start.service",
+])

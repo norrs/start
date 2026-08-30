@@ -1,0 +1,36 @@
+services:
+  start:
+    image: ghcr.io/norrs/start:latest
+    pull_policy: always
+    container_name: start
+    restart: unless-stopped
+    read_only: true
+    user: "65532:65532"
+    environment:
+      STARTPAGE_BASE_URL: https://start.example.com
+      STARTPAGE_OIDC_ISSUER: https://auth.example.com
+      STARTPAGE_OIDC_CLIENT_ID: ${STARTPAGE_OIDC_CLIENT_ID:?required}
+      STARTPAGE_OIDC_CLIENT_SECRET_FILE: /run/secrets/oidc_client_secret
+      STARTPAGE_OIDC_LOGOUT_URL: https://auth.example.com/logout
+      STARTPAGE_ADMIN_GROUPS: start-admins
+      STARTPAGE_TRUSTED_PROXIES: 172.16.0.0/12
+      STARTPAGE_METRICS_ENABLED: "true"
+      STARTPAGE_DEV_MODE: "false"
+    secrets:
+      - oidc_client_secret
+    volumes:
+      - ./data:/data
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    ports:
+      - 127.0.0.1:18080:8080
+    healthcheck:
+      test: ["CMD", "/app/start", "healthcheck"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+secrets:
+  oidc_client_secret:
+    file: ./secrets/oidc_client_secret
