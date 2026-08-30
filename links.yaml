@@ -1,0 +1,50 @@
+version: 1
+categories:
+  - slug: development
+    name: Development
+    description: Build, documentation, and engineering tools
+    color: "#60a5fa"
+    order: 10
+  - slug: monitoring
+    name: Monitoring
+    description: Service health and operational visibility
+    color: "#34d399"
+    order: 20
+  - slug: security
+    name: Security
+    description: Identity and security services
+    color: "#f59e0b"
+    order: 30
+groups:
+  - slug: platform
+    name: Platform
+    description: Shared infrastructure maintainers
+links:
+  - slug: stirling-pdf
+    title: Stirling PDF
+    url: https://pdf.internal.example
+    description: Internal PDF toolbox
+    category: development
+    ownerGroup: platform
+    icon:
+      provider: material
+      name: picture_as_pdf
+      color: "#ef4444"
+    tags: [pdf, documents]
+    audience:
+      roles: []
+      teams: []
+  - slug: pocket-id
+    title: Pocket ID
+    url: https://id.internal.example
+    description: Passkey identity provider
+    category: security
+    ownerGroup: platform
+    icon:
+      provider: fontawesome
+      name: key
+      color: "#f59e0b"
+    tags: [identity, passkeys, oidc]
+    audience:
+      roles: []
+      teams: []
