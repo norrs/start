@@ -1,6 +1,16 @@
 # Start
 
-Start is a self-hosted internal launchpad for links, tools, and resources. It uses Vue 3, Gin, SQLite, Goose, sqlc, OIDC authentication over the OAuth 2.0 authorization-code flow, and a keyboard-first interface.
+Start is a self-hosted internal launchpad for the tools and resources your
+team uses every day. It combines a fast, keyboard-first Vue interface with a
+small Go service, SQLite storage, and OIDC authentication.
+
+<p align="center">
+  <img src="docs/images/start-dashboard.jpg" alt="Start showing links grouped into Development and Security categories" width="100%">
+</p>
+
+<p align="center">
+  <strong>Search quickly. Keep ownership local. Show each person only what matters.</strong>
+</p>
 
 <!-- release:start -->
 Latest release: [v0.0.1](https://github.com/norrs/start/releases/tag/v0.0.1)
@@ -8,6 +18,34 @@ Latest release: [v0.0.1](https://github.com/norrs/start/releases/tag/v0.0.1)
 Published multi-architecture container tags: `ghcr.io/norrs/start:0.0.1`,
 `ghcr.io/norrs/start:0.0`, `ghcr.io/norrs/start:0`, and `ghcr.io/norrs/start:latest`.
 <!-- release:end -->
+
+## A quick tour
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="docs/images/start-search.jpg" alt="Fuzzy search returning a matching Pocket ID link">
+      <br><strong>Find anything without leaving the keyboard</strong>
+      <br>Fuzzy-search titles, descriptions, URLs, and tags, then press
+      <kbd>Enter</kbd> to open an exact match.
+    </td>
+    <td width="50%">
+      <img src="docs/images/start-settings.jpg" alt="Display settings showing theme and visibility controls">
+      <br><strong>Make the dashboard yours</strong>
+      <br>Choose Dark, Light, Hacker, or 1984 themes and control descriptions,
+      categories, icons, hidden links, and single-key shortcuts.
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2">
+      <img src="docs/images/start-link-editor.jpg" alt="Link editor previewing a blue Docker icon from Devicon">
+      <br><strong>Curate links with confidence</strong>
+      <br>Preview Devicon, Font Awesome, and Material icons while editing;
+      assign ownership, categories, roles, teams, tags, and colors; and recover
+      selected links from revision history.
+    </td>
+  </tr>
+</table>
 
 ## Quick start with the latest release
 
