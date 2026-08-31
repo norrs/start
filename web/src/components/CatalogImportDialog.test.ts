@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import CatalogImportDialog from './CatalogImportDialog.vue'
 
 describe('CatalogImportDialog',()=>{
@@ -9,8 +9,7 @@ describe('CatalogImportDialog',()=>{
     const input=wrapper.get('input[type="file"]')
     Object.defineProperty(input.element,'files',{value:[file]})
     await input.trigger('change')
-    await new Promise(resolve=>setTimeout(resolve,0))
-    expect(wrapper.get('pre').text()).toContain('version: 1')
+    await vi.waitFor(()=>expect(wrapper.get('pre').text()).toContain('version: 1'))
     expect(wrapper.get('button[type="submit"]').attributes('disabled')).toBeDefined()
     await wrapper.get('input[type="checkbox"]').setValue(true)
     await wrapper.get('form').trigger('submit')
