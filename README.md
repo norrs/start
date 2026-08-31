@@ -3,11 +3,10 @@
 Start is a self-hosted internal launchpad for links, tools, and resources. It uses Vue 3, Gin, SQLite, Goose, sqlc, OIDC authentication over the OAuth 2.0 authorization-code flow, and a keyboard-first interface.
 
 <!-- release:start -->
-Latest release: not published yet.
+Latest release: [v0.0.1](https://github.com/norrs/start/releases/tag/v0.0.1)
 
-Release containers will be published as `ghcr.io/norrs/start:<version>`,
-`ghcr.io/norrs/start:<major>.<minor>`, `ghcr.io/norrs/start:<major>`, and
-`ghcr.io/norrs/start:latest`.
+Published multi-architecture container tags: `ghcr.io/norrs/start:0.0.1`,
+`ghcr.io/norrs/start:0.0`, `ghcr.io/norrs/start:0`, and `ghcr.io/norrs/start:latest`.
 <!-- release:end -->
 
 ## Quick start with the latest release
