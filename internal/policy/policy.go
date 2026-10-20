@@ -26,6 +26,9 @@ func Visible(identity Identity, link Link) bool {
 	if !link.Enabled || link.Deleted {
 		return false
 	}
+	if CanManage(identity, link) {
+		return true
+	}
 	return intersectsOrEmpty(identity.Roles, link.Roles) && intersectsOrEmpty(identity.Teams, link.Teams)
 }
 
